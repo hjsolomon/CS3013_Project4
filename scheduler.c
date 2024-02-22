@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 {
     // user input
     printf("Enter a scheduling policy, workload file, and timeslice duration: ");
-    scanf("%s %s %d\n", &policy, &fileName, &timeSlice);
+    scanf("%s %s %d", &policy, &fileName, &timeSlice);
     FILE *file;
     file = fopen(fileName, "r");
     if (file == NULL) // checking if the file exists
@@ -48,6 +48,16 @@ int main(int argc, char *argv[])
             current->next = newJob;
             current = newJob;
         }
+    }
+    fclose(file);
+
+
+    //prints jobs
+
+    current = head;
+    while (current != NULL){
+        printf("Job %d has a length of %d\n", current->id, current->length);
+        current = current->next;
     }
 
     // policy checking
