@@ -15,6 +15,25 @@ struct job
     struct job *next;
 };
 
+void FIFO(struct job *head)
+{
+    printf("Execution trace with FIFO: \n");
+    struct job *current = head;
+    while (current != NULL)
+    {
+        printf("Job %d ran for: %d\n", current->id, current->length);
+        current = current->next;
+    }
+}
+
+void SJF(struct job *head)
+{
+}
+
+void RR(struct job *head)
+{
+}
+
 int main(int argc, char *argv[])
 {
     // user input
@@ -25,12 +44,12 @@ int main(int argc, char *argv[])
     if (file == NULL) // checking if the file exists
         printf("Error opening file %s\n", fileName);
 
-    // job creation 
+    // job creation
     struct job *head = NULL;
     struct job *current = NULL;
 
     char line[50];
-    int id = 1;
+    int id = 0;
     while (fgets(line, sizeof(line), file) != NULL)
     {
         struct job *newJob = (struct job *)malloc(sizeof(struct job));
@@ -51,18 +70,10 @@ int main(int argc, char *argv[])
     }
     fclose(file);
 
-
-    //prints jobs
-
-    current = head;
-    while (current != NULL){
-        printf("Job %d has a length of %d\n", current->id, current->length);
-        current = current->next;
-    }
-
     // policy checking
     if (strcmp(policy, "FIFO") == 0)
     {
+        FIFO(head);
     }
     else if (strcmp(policy, "SJF") == 0)
     {
