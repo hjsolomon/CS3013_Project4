@@ -19,6 +19,8 @@ void FIFO(struct job *head)
 {
     printf("Execution trace with FIFO: \n");
     struct job *current = head;
+
+    // prints all jobs in order
     while (current != NULL)
     {
         printf("Job %d ran for: %d\n", current->id, current->length);
@@ -28,17 +30,55 @@ void FIFO(struct job *head)
 
 void SJF(struct job *head)
 {
+    printf("Execution trace with SJF: \n");
+
+    struct job *current, *temp;
+    int tempvar;
+
+    current = head;
+    // sorts jobs in order of increasing length
+    while (current != NULL)
+    {
+        temp = current->next;
+
+        while (temp != NULL)
+        {
+            if (current->length > temp->length)
+            {
+                tempvar = current->length;
+                current->length = temp->length;
+                temp->length = tempvar;
+                tempvar = current->id;
+                current->id = temp->id;
+                temp->id = tempvar;
+            }
+
+            temp = temp->next;
+        }
+
+        current = current->next;
+    }
+
+    current = head;
+
+    // print all jobs
+    while (current != NULL)
+    {
+        printf("Job %d ran for: %d\n", current->id, current->length);
+        current = current->next;
+    }
 }
 
 void RR(struct job *head)
 {
+    // TODO
 }
 
 int main(int argc, char *argv[])
 {
     // user input
     printf("Enter a scheduling policy, workload file, and timeslice duration: ");
-    scanf("%s %s %d", &policy, &fileName, &timeSlice);
+    scanf("%s %s %d", policy, fileName, &timeSlice);
     FILE *file;
     file = fopen(fileName, "r");
     if (file == NULL) // checking if the file exists
@@ -77,6 +117,7 @@ int main(int argc, char *argv[])
     }
     else if (strcmp(policy, "SJF") == 0)
     {
+        SJF(head);
     }
     else if (strcmp(policy, "RR") == 0)
     {
