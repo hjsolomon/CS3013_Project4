@@ -71,7 +71,33 @@ void SJF(struct job *head)
 
 void RR(struct job *head)
 {
-    // TODO
+    printf("Execution trace with RR: \n");
+    struct job *current = head;
+    int remainingJob = 1;
+
+    while (remainingJob)
+    {
+        remainingJob = 0;
+
+        while (current != NULL)
+        {
+            if (current->length > timeSlice)
+            {
+                printf("Job %d ran for: %d\n", current->id, timeSlice);
+                current->length -= timeSlice;
+                remainingJob = 1;
+            }
+            else if (current->length > 0)
+            {
+                printf("Job %d ran for: %d\n", current->id, current->length);
+                current->length = 0;
+                remainingJob = 1;
+            }
+
+            current = current->next;
+        }
+        current = head;
+    }
 }
 
 int main(int argc, char *argv[])
@@ -121,6 +147,7 @@ int main(int argc, char *argv[])
     }
     else if (strcmp(policy, "RR") == 0)
     {
+        RR(head);
     }
     else
         printf("Invalid policy");
