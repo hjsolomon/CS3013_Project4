@@ -13,7 +13,42 @@ struct job
     int id;
     int length;
     struct job *next;
+    int responseTime;
+    int turnaroundTime;
+    int waitTime;
 };
+
+void analyze(struct job *head)
+{
+    struct job *current = head;
+    int systemTime = 0;
+    while (current != NULL)
+    {
+        current->responseTime = systemTime;
+        current->turnaroundTime = systemTime + current->length;
+        current->waitTime = systemTime;
+        printf("Job %d -- Response Time: %d Turnaround: %d Wait: %d\n", current->id, current->responseTime, current->turnaroundTime, current->waitTime);
+        systemTime += current->length;
+        current = current->next;
+    }
+
+    float totalResponseTime = 0.0;
+    float totalTurnaroundTime = 0.0;
+    float totalWaitTime = 0.0;
+    float totalJobs = 0.0;
+    current = head;
+
+    while (current != NULL)
+    {
+        totalResponseTime += current->responseTime;
+        totalTurnaroundTime += current->turnaroundTime;
+        totalWaitTime += current->waitTime;
+        totalJobs++;
+        current = current->next;
+    }
+
+    printf("Average -- Response Time: %0.2f Turnaround: %0.2f Wait: %0.2f\n", totalResponseTime / totalJobs, totalTurnaroundTime / totalJobs, totalWaitTime / totalJobs);
+}
 
 void FIFO(struct job *head)
 {
@@ -28,6 +63,12 @@ void FIFO(struct job *head)
     }
 
     printf("End of execution with FIFO.\n");
+
+    printf("Begin analyzing FIFO: \n");
+
+    analyze(head);
+    
+    printf("End analyzing FIFO.\n");
 }
 
 void SJF(struct job *head)
@@ -71,6 +112,12 @@ void SJF(struct job *head)
     }
 
     printf("End of execution with SJF.\n");
+
+    printf("Begin analyzing SJF: \n");
+
+    analyze(head);
+
+    printf("End analyzing SJF.\n");
 }
 
 void RR(struct job *head)
@@ -104,6 +151,12 @@ void RR(struct job *head)
     }
 
     printf("End of execution with RR.\n");
+
+    printf("Begin analyzing RR: \n");
+
+    analyze(head);
+
+    printf("End analyzing RR.\n");
 }
 
 int main(int argc, char *argv[])
@@ -132,6 +185,9 @@ int main(int argc, char *argv[])
         struct job *newJob = (struct job *)malloc(sizeof(struct job));
         sscanf(line, "%d", &newJob->length);
         newJob->id = id++;
+        newJob->responseTime = 0;
+        newJob->turnaroundTime = 0;
+        newJob->waitTime = 0;
         newJob->next = NULL;
 
         if (head == NULL)
