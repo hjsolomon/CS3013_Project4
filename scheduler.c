@@ -26,6 +26,8 @@ void FIFO(struct job *head)
         printf("Job %d ran for: %d\n", current->id, current->length);
         current = current->next;
     }
+
+    printf("End of execution with FIFO.\n");
 }
 
 void SJF(struct job *head)
@@ -67,6 +69,8 @@ void SJF(struct job *head)
         printf("Job %d ran for: %d\n", current->id, current->length);
         current = current->next;
     }
+
+    printf("End of execution with SJF.\n");
 }
 
 void RR(struct job *head)
@@ -98,13 +102,20 @@ void RR(struct job *head)
         }
         current = head;
     }
+
+    printf("End of execution with RR.\n");
 }
 
 int main(int argc, char *argv[])
 {
     // user input
-    printf("Enter a scheduling policy, workload file, and timeslice duration: ");
-    scanf("%s %s %d", policy, fileName, &timeSlice);
+    // printf("Enter a scheduling policy, workload file, and timeslice duration: ");
+    // scanf("%s %s %d", policy, fileName, &timeSlice);
+
+    strcpy(policy, argv[1]);
+    strcpy(fileName, argv[2]);
+    timeSlice = atoi(argv[3]);
+    
     FILE *file;
     file = fopen(fileName, "r");
     if (file == NULL) // checking if the file exists
