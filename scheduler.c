@@ -17,7 +17,7 @@ struct job
 
 void FIFO(struct job *head)
 {
-    printf("Execution trace with FIFO: \n");
+    printf("Execution trace with FIFO:\n");
     struct job *current = head;
 
     // prints all jobs in order
@@ -32,7 +32,7 @@ void FIFO(struct job *head)
 
 void SJF(struct job *head)
 {
-    printf("Execution trace with SJF: \n");
+    printf("Execution trace with SJF:\n");
 
     struct job *current, *temp;
     int tempvar;
@@ -75,7 +75,7 @@ void SJF(struct job *head)
 
 void RR(struct job *head)
 {
-    printf("Execution trace with RR: \n");
+    printf("Execution trace with RR:\n");
     struct job *current = head;
     int remainingJob = 1;
 
