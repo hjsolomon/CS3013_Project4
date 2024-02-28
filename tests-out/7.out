@@ -1,0 +1,11 @@
+Execution trace with RR:
+Job 0 ran for: 2
+Job 0 ran for: 2
+Job 0 ran for: 2
+Job 0 ran for: 2
+Job 0 ran for: 2
+End of execution with RR.
+Begin analyzing RR: 
+Job 0 -- Response Time: 20 Turnaround: 8 Wait: 20
+Average -- Response Time: 20.00 Turnaround: 8.00 Wait: 20.00
+End analyzing RR.

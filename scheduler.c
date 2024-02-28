@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 char policy[4];
 char fileName[20];
@@ -12,23 +13,20 @@ struct job
 {
     int id;
     int length;
+    int remaining;
     struct job *next;
     int responseTime;
     int turnaroundTime;
     int waitTime;
+    bool appeared;
 };
 
 void analyze(struct job *head)
 {
     struct job *current = head;
-    int systemTime = 0;
     while (current != NULL)
     {
-        current->responseTime = systemTime;
-        current->turnaroundTime = systemTime + current->length;
-        current->waitTime = systemTime;
         printf("Job %d -- Response Time: %d Turnaround: %d Wait: %d\n", current->id, current->responseTime, current->turnaroundTime, current->waitTime);
-        systemTime += current->length;
         current = current->next;
     }
 
@@ -55,10 +53,23 @@ void FIFO(struct job *head)
     printf("Execution trace with FIFO:\n");
     struct job *current = head;
 
+    int sysTime = 0;
+    int startTime = 0;
+    int endTime = 0;
+
     // prints all jobs in order
     while (current != NULL)
     {
+        current->appeared = true;
+        startTime = sysTime;
         printf("Job %d ran for: %d\n", current->id, current->length);
+        endTime = sysTime + current->length;
+
+        current->responseTime = startTime - 0;
+        current->turnaroundTime = endTime - 0;
+        current->waitTime = sysTime;
+
+        sysTime += current->length;
         current = current->next;
     }
 
@@ -77,6 +88,10 @@ void SJF(struct job *head)
 
     struct job *current, *temp;
     int tempvar;
+
+    int sysTime = 0;
+    int startTime = 0;
+    int endTime = 0;
 
     current = head;
     // sorts jobs in order of increasing length
@@ -107,7 +122,16 @@ void SJF(struct job *head)
     // print all jobs
     while (current != NULL)
     {
+        current->appeared = true;
+        startTime = sysTime;
         printf("Job %d ran for: %d\n", current->id, current->length);
+        endTime = sysTime + current->length;
+
+        current->responseTime = startTime - 0;
+        current->turnaroundTime = endTime - 0;
+        current->waitTime = sysTime;
+
+        sysTime += current->length;
         current = current->next;
     }
 
@@ -126,32 +150,47 @@ void RR(struct job *head)
     struct job *current = head;
     int remainingJob = 1;
 
+    int sysTime = 0;
+    int startTime = 0;
+    int endTime = 0;
+
     while (remainingJob)
     {
         remainingJob = 0;
 
         while (current != NULL)
         {
-            if (current->length > timeSlice)
+            if (current->remaining > 0)
             {
-                printf("Job %d ran for: %d\n", current->id, timeSlice);
-                current->length -= timeSlice;
-                remainingJob = 1;
-            }
-            else if (current->length > 0)
-            {
-                printf("Job %d ran for: %d\n", current->id, current->length);
-                current->length = 0;
-                remainingJob = 1;
-            }
+                startTime = sysTime;
+                if (current->remaining > timeSlice) {
+                    printf("Job %d ran for: %d\n", current->id, timeSlice);
+                    endTime = startTime + timeSlice;
+                    current->remaining -= timeSlice;
+                } else {
+                    printf("Job %d ran for: %d\n", current->id, current->remaining);
+                    endTime = startTime + current->remaining;
+                    current->remaining = 0; 
+                }
 
+                if (current->appeared == false)
+                {
+                    current->responseTime = startTime - 0;
+                    current->appeared = true;
+                }
+                current->turnaroundTime = endTime - 0;
+                current->waitTime = sysTime; // not updating correctly
+
+                sysTime += endTime - startTime;
+                remainingJob = 1;
+            }
             current = current->next;
         }
         current = head;
     }
-
     printf("End of execution with RR.\n");
 
+    current = head;
     printf("Begin analyzing RR: \n");
 
     analyze(head);
@@ -185,10 +224,12 @@ int main(int argc, char *argv[])
         struct job *newJob = (struct job *)malloc(sizeof(struct job));
         sscanf(line, "%d", &newJob->length);
         newJob->id = id++;
+        newJob->remaining = newJob->length;
         newJob->responseTime = 0;
         newJob->turnaroundTime = 0;
         newJob->waitTime = 0;
         newJob->next = NULL;
+        newJob->appeared = false;
 
         if (head == NULL)
         {
